@@ -1,5 +1,69 @@
 <!DOCTYPE html>
 <html style="font-size: 16px;" lang="tr"><head>
+	<style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #121212;
+            color: #f4f4f4;
+            overflow: hidden;
+        }
+        header {
+            background-color: #1c1c1c;
+            color: white;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #333;
+        }
+        header img {
+            border-radius: 50%;
+            height: 80px;
+            width: 80px;
+            margin-right: 20px;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2em;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .bio, .interests, .contact {
+            background-color: #1c1c1c;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        .bio h2, .interests h2, .contact h2 {
+            margin-top: 0;
+        }
+        .interests ul {
+            list-style-type: disc;
+            padding-left: 20px;
+        }
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+            border-top: 1px solid #444;
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+    </style>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="utf-8">
     <meta name="keywords" content="Digital innovation company that creates progress, ​Simple prices, flexible options &amp;amp; nothing hidden, ​What Our Clients Say, Featured clients">
