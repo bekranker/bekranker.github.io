@@ -203,7 +203,7 @@
                 this.directionY = directionY;
                 this.size = size;
                 this.color = color;
-                this.opacity = Math.random() * 0.5 + 0.25;
+                this.opacity = Math.random() * 0.3;
                 this.history = [{x: this.x, y: this.y}];
             }
 
@@ -221,7 +221,7 @@
                     const nextPoint = this.history[i - 1];
                     ctx.moveTo(point.x, point.y);
                     ctx.lineTo(nextPoint.x, nextPoint.y);
-                    ctx.lineWidth = this.size * (i / this.history.length);
+                    ctx.lineWidth = this.size * (i / this.history.length) * 20;
                 }
                 ctx.strokeStyle = this.color;
                 ctx.stroke();
@@ -262,13 +262,13 @@
         }
 
         function init() {
-            let numberOfParticles = (canvas.width * canvas.height) / 9000;
+            let numberOfParticles = (canvas.width * canvas.height) / 3000;
             for (let i = 0; i < numberOfParticles; i++) {
                 let size = (Math.random() * 3) + 1;
                 let x = (Math.random() * (window.innerWidth - size * 2)) + size;
                 let y = (Math.random() * (window.innerHeight - size * 2)) + size;
-                let directionX = (Math.random() * 0.5) - 0.25;
-                let directionY = (Math.random() * 0.5) - 0.25;
+                let directionX = (Math.random() * .5);
+                let directionY = (Math.random() * .5);
                 let color = 'rgba(255,255,255,0.8)';
                 particlesArray.push(new Particle(x, y, directionX, directionY, size, color));
             }
