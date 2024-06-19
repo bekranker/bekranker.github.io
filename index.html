@@ -242,13 +242,13 @@
 
                 if (mouse.holding) {
                     if (distance < mouse.radius * 2) {
-                        this.x += dx / distance * 2;
-                        this.y += dy / distance * 2;
+                        this.x += (dx / distance) * 5;
+                        this.y += (dy / distance) * 5;
                     }
                 } else {
                     if (distance < mouse.radius) {
-                        this.x += dx / distance;
-                        this.y += dy / distance;
+                        this.x += (dx / distance) * 5;
+                        this.y += (dy / distance) * 5;
                     }
                 }
 
