@@ -8,9 +8,9 @@
         body {
             margin: 0;
             overflow: hidden;
-            font-family: Arial, sans-serif;
-            background-color: #171717;
-            color: white;
+            font-family: futura light bt;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -19,12 +19,17 @@
             text-align: center;
             opacity: 0;
             animation: fadeIn 2s forwards;
+            transition: background-color 1s, color 1s;
         }
 
-        @keyframes fadeIn {
-            to {
-                opacity: 1;
-            }
+        :root {
+            --bg-color: #171717;
+            --text-color: white;
+        }
+
+        .light-mode {
+            --bg-color: rgb(166, 166, 166);
+            --text-color: black;
         }
 
         .profile img, .profile h2, .about h1, .about p, .buttons img {
@@ -44,6 +49,12 @@
             animation-delay: 2s;
         }
 
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
         @keyframes fadeInElement {
             to {
                 opacity: 1;
@@ -54,7 +65,7 @@
             border-radius: 50%;
             width: 150px;
             height: 150px;
-            border: 3px solid white;
+            border: 3px solid var(--text-color);
             margin-bottom: 10px;
             transition: transform 0.3s, box-shadow 0.3s;
         }
@@ -95,11 +106,29 @@
         .about h1 {
             font-size: 36px;
             margin-bottom: 10px;
+            transition: transform 0.5s, box-shadow 0.5s;
         }
 
         .about p {
             font-size: 18px;
             line-height: 1.6;
+            transition: transform 0.5s, box-shadow 0.5s;
+        }
+
+        .about h1:hover, .about p:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+        }
+
+        .about h1:hover span, .about p:hover span {
+            display: inline-block;
+            animation: bounce 1s infinite alternate;
+        }
+
+        @keyframes bounce {
+            to {
+                transform: scale(1.1);
+            }
         }
 
         .buttons {
@@ -134,6 +163,21 @@
             box-shadow: 0 0 15px rgba(255, 125, 125, 0.5);
         }
 
+        .theme-switch {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            font-size: 24px;
+            z-index: 1;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .theme-switch:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+        }
+
         .canvas {
             position: absolute;
             top: 0;
@@ -154,6 +198,7 @@
 </head>
 <body>
     <canvas class="canvas"></canvas>
+    <div class="theme-switch" onclick="toggleTheme()">🌓</div>
     <div class="profile">
         <img src="profile.png" alt="Profil Resmi">
         <h2 class="developer">Unity Developer</h2>
@@ -169,9 +214,14 @@
     </div>
 
     <script>
+        let particlesArray = [];
+
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+        }
+
         const canvas = document.querySelector('.canvas');
         const ctx = canvas.getContext('2d');
-        const particlesArray = [];
         let mouse = {
             x: null,
             y: null,
@@ -256,7 +306,7 @@
                 this.y += this.directionY * 0.5;
                 this.history.push({x: this.x, y: this.y});
                 if (this.history.length > 20) this.history.shift();
-                this.color = `rgba(255, 255, 255, ${this.opacity})`;
+                this.color = `rgba(${document.body.classList.contains('light-mode') ? 0 : 255}, ${document.body.classList.contains('light-mode') ? 0 : 255}, ${document.body.classList.contains('light-mode') ? 0 : 255}, ${this.opacity})`;
                 this.draw();
             }
         }
