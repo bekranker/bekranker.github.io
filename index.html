@@ -25,11 +25,13 @@
         :root {
             --bg-color: #171717;
             --text-color: white;
+            --developer-color: #aaa; /* Yeni */
         }
 
         .light-mode {
             --bg-color: rgb(166, 166, 166);
-            --text-color: black;
+            --text-color: #171717;
+            --developer-color: #171717; /* Yeni */
         }
 
         .profile img, .profile h2, .about h1, .about p, .buttons img {
@@ -78,8 +80,8 @@
         .profile h2 {
             font-size: 18px;
             margin-top: 0;
-            color: #aaa;
-            transition: transform 0.3s, box-shadow 0.3s;
+            color: var(--developer-color);
+            transition: transform 0.3s, box-shadow 0.3s, color 1s;
         }
 
         .profile h2:hover {
@@ -205,7 +207,7 @@
     </div>
     <div class="about">
         <h1>Hakkımda</h1>
-        <p>Merhaba! Ben Bekir Ekiz. 3 yıldır Unity ile oyun geliştiriyorum. Ekip olarak HTML platformunda oyunlar yayınladık. 10'a yakın game jam deneyimim var ve 5'e yakın game jam etkinliğinde organizatör olarak görev aldım. Yazılım geliştirme, oyun tasarımı ve web teknolojileri ile ilgileniyorum. LinkedIn, GitHub ve Itch.io profillerime aşağıdaki bağlantılardan ulaşabilirsiniz.</p>
+        <p>Merhaba! Ben Bekir Ekiz. 3 yıldır Unity ile oyun geliştiriyorum. Ekip olarak HTML platformunda oyunlar yayınladık. 10'a yakın game jam deneyimim var ve 5'e yakın game jam etkinliğinde organizatör olarak görev aldım. Yazılım geliştirme, oyun tasarımı ile ilgileniyorum. LinkedIn, GitHub ve Itch.io profillerime aşağıdaki bağlantılardan ulaşabilirsiniz.</p>
     </div>
     <div class="buttons">
         <img class="linkedin" src="linkedin.png" alt="LinkedIn" onclick="window.open('https://www.linkedin.com/in/bekir-ekiz-03118b229/')">
@@ -243,6 +245,12 @@
 
         window.addEventListener('mouseup', function() {
             mouse.holding = false;
+            for (let i = 0; i < particlesArray.length; i++) {
+                if (particlesArray[i].isFollowing) {
+                    particlesArray[i].scattering = true; // Sadece basılı tutarken takip eden noktaları saç
+                    particlesArray[i].isFollowing = false; // Takip etmeyi durdur
+                }
+            }
         });
 
         class Particle {
@@ -255,6 +263,8 @@
                 this.color = color;
                 this.opacity = Math.random() * 0.3;
                 this.history = [{x: this.x, y: this.y}];
+                this.scattering = false; // Yeni özellik
+                this.isFollowing = false; // Yeni özellik: Takip eden noktaları belirlemek için
             }
 
             draw() {
@@ -271,7 +281,7 @@
                     const nextPoint = this.history[i - 1];
                     ctx.moveTo(point.x, point.y);
                     ctx.lineTo(nextPoint.x, nextPoint.y);
-                    ctx.lineWidth = this.size * (i / this.history.length) * 20;
+                    ctx.lineWidth = this.size * (i / this.history.length) * 1;
                 }
                 ctx.strokeStyle = this.color;
                 ctx.stroke();
@@ -292,14 +302,19 @@
 
                 if (mouse.holding) {
                     if (distance < mouse.radius * 2) {
+                        this.isFollowing = true; // Takip eden noktaları belirleme
                         this.x += (dx / distance) * 5;
                         this.y += (dy / distance) * 5;
                     }
                 } else {
-                    if (distance < mouse.radius) {
-                        this.x += (dx / distance) * 5;
-                        this.y += (dy / distance) * 5;
-                    }
+                    this.isFollowing = false; // Mouse bırakıldığında takip etmeyi durdur
+                }
+
+                if (this.scattering) {
+                    // Scatter particles
+                    this.directionX = (Math.random() - 0.5) * 3;
+                    this.directionY = (Math.random() - 0.5) * 3;
+                    this.scattering = false; // Reset scattering
                 }
 
                 this.x += this.directionX * 0.5;
