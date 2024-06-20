@@ -25,13 +25,13 @@
         :root {
             --bg-color: #171717;
             --text-color: white;
-            --developer-color: #aaa; /* Yeni */
+            --developer-color: #aaa;
         }
 
         .light-mode {
             --bg-color: rgb(166, 166, 166);
             --text-color: #171717;
-            --developer-color: #171717; /* Yeni */
+            --developer-color: #171717;
         }
 
         .profile img, .profile h2, .about h1, .about p, .buttons img {
@@ -166,18 +166,44 @@
         }
 
         .theme-switch {
-            position: absolute;
-            top: 20px;
-            right: 20px;
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 80px;
+            height: 40px;
+            background-color: #fff; /* Default background for dark mode */
+            border: 2px solid #000;
+            border-radius: 20px;
             cursor: pointer;
-            font-size: 24px;
-            z-index: 1;
-            transition: transform 0.3s, box-shadow 0.3s;
+            transition: background-color 0.3s;
+            z-index: 10; /* Ensure it is above other elements */
+        }
+        body.light-mode .theme-switch {
+            background-color: #000; /* Background for light mode */
+            color: #fff; /* Text color for light mode */
+        }
+        .theme-switch::before {
+            content: '';
+            transition: transform 0.3s;
         }
 
-        .theme-switch:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+        .theme-switch.light-mode {
+            background-color: #d0d0d0;
+        }
+        .theme-switch .switch-icon {
+            width: 24px;
+            height: 24px;
+            background-color: #0000008c;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+        .light-mode .theme-switch .switch-icon {
+            background-color: #fff;
+            transform: translateX(40px);
         }
 
         .canvas {
@@ -196,18 +222,54 @@
                 opacity: 1;
             }
         }
+
+        .language-switch {
+            position: fixed;
+            bottom: 70px; /* Adjust as needed to position above the theme switch */
+            left: 50%;
+            transform: translateX(-50%);
+            cursor: pointer;
+            width: 80px;
+            height: 30px;
+            background-color: #ffffff84; /* Default background for dark mode */
+            border: 2px solid #00000076;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding: 5px;
+            transition: background-color 0.3s;
+            z-index: 9; /* Ensure it is above other elements */
+        }
+
+        .language-switch span {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .language-switch span:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px #ffffff80;
+        }
     </style>
 </head>
 <body>
     <canvas class="canvas"></canvas>
-    <div class="theme-switch" onclick="toggleTheme()">🌓</div>
+    <div class="theme-switch" id="theme-switch" onclick="toggleTheme()">
+        <span id="theme-icon">🌜</span>
+    </div>
+    <div class="language-switch" onclick="toggleLanguage()">
+        <span id="language-icon">🇹🇷</span>
+    </div>
     <div class="profile">
         <img src="profile.png" alt="Profil Resmi">
-        <h2 class="developer">Unity Developer</h2>
+        <h2 class="developer" data-en="Unity Developer" data-tr="Unity Geliştirici">Unity Developer</h2>
     </div>
     <div class="about">
-        <h1>Hakkımda</h1>
-        <p>Merhaba! Ben Bekir Ekiz. 3 yıldır Unity ile oyun geliştiriyorum. Ekip olarak HTML platformunda oyunlar yayınladık. 10'a yakın game jam deneyimim var ve 5'e yakın game jam etkinliğinde organizatör olarak görev aldım. Yazılım geliştirme, oyun tasarımı ile ilgileniyorum. LinkedIn, GitHub ve Itch.io profillerime aşağıdaki bağlantılardan ulaşabilirsiniz.</p>
+        <h1 data-en="About Me" data-tr="Hakkımda">Hakkımda</h1>
+        <p data-en="Hello! I am Bekir Ekiz. I have been developing games with Unity for 3 years. As a team, we published games on the HTML platform. I have experience in nearly 10 game jams and have served as an organizer in nearly 5 game jam events. I am interested in software development and game design. You can reach my LinkedIn, GitHub, and Itch.io profiles through the links below."
+            data-tr="Merhaba! Ben Bekir Ekiz. 3 yıldır Unity ile oyun geliştiriyorum. Ekip olarak HTML platformunda oyunlar yayınladık. 10'a yakın game jam deneyimim var ve 5'e yakın game jam etkinliğinde organizatör olarak görev aldım. Yazılım geliştirme, oyun tasarımı ile ilgileniyorum. LinkedIn, GitHub ve Itch.io profillerime aşağıdaki bağlantılardan ulaşabilirsiniz.">
+            Merhaba! Ben Bekir Ekiz. 3 yıldır Unity ile oyun geliştiriyorum. Ekip olarak HTML platformunda oyunlar yayınladık. 10'a yakın game jam deneyimim var ve 5'e yakın game jam etkinliğinde organizatör olarak görev aldım. Yazılım geliştirme, oyun tasarımı ile ilgileniyorum. LinkedIn, GitHub ve Itch.io profillerime aşağıdaki bağlantılardan ulaşabilirsiniz.
+        </p>
     </div>
     <div class="buttons">
         <img class="linkedin" src="linkedin.png" alt="LinkedIn" onclick="window.open('https://www.linkedin.com/in/bekir-ekiz-03118b229/')">
@@ -217,9 +279,40 @@
 
     <script>
         let particlesArray = [];
-
+        const body = document.body;
+        const themeIcon = document.getElementById('theme-icon');
+        const themeSwitch = document.querySelector('.theme-switch');
+        const languageSwitch = document.getElementById('language-icon');
+        const elementsToTranslate = document.querySelectorAll('[data-en], [data-tr]');
+        let isLightMode = false;
+        let currentLanguage = 'tr';
         function toggleTheme() {
-            document.body.classList.toggle('light-mode');
+            
+            body.classList.toggle('light-mode');
+
+            if (body.classList.contains('light-mode')) {
+                themeIcon.textContent = '🌞'; // Sun emoji for light mode
+                themeSwitch.style.backgroundColor = '#0000008c'; // Black background for light mode
+                themeSwitch.style.color = '#ffffff80'; // White text for light mode
+            } else {
+                themeIcon.textContent = '🌜'; // Moon emoji for dark mode
+                themeSwitch.style.backgroundColor = '#ffffff80'; // White background for dark mode
+                themeSwitch.style.color = '#0000008c'; // Black text for dark mode
+            }
+        }
+
+        function toggleLanguage() {
+
+            if (currentLanguage === 'tr') {
+                currentLanguage = 'en';
+                languageSwitch.textContent = '🇺🇸';
+            } else {
+                currentLanguage = 'tr';
+                languageSwitch.textContent = '🇹🇷';
+            }
+            elementsToTranslate.forEach(el => {
+                el.textContent = el.getAttribute(`data-${currentLanguage}`);
+            });
         }
 
         const canvas = document.querySelector('.canvas');
@@ -247,8 +340,8 @@
             mouse.holding = false;
             for (let i = 0; i < particlesArray.length; i++) {
                 if (particlesArray[i].isFollowing) {
-                    particlesArray[i].scattering = true; // Sadece basılı tutarken takip eden noktaları saç
-                    particlesArray[i].isFollowing = false; // Takip etmeyi durdur
+                    particlesArray[i].scattering = true;
+                    particlesArray[i].isFollowing = false;
                 }
             }
         });
@@ -263,8 +356,8 @@
                 this.color = color;
                 this.opacity = Math.random() * 0.3;
                 this.history = [{x: this.x, y: this.y}];
-                this.scattering = false; // Yeni özellik
-                this.isFollowing = false; // Yeni özellik: Takip eden noktaları belirlemek için
+                this.scattering = false;
+                this.isFollowing = false;
             }
 
             draw() {
@@ -274,7 +367,6 @@
                 ctx.fill();
                 ctx.closePath();
 
-                // Draw trail
                 ctx.beginPath();
                 for (let i = this.history.length - 1; i > 0; i--) {
                     const point = this.history[i];
@@ -302,19 +394,18 @@
 
                 if (mouse.holding) {
                     if (distance < mouse.radius * 2) {
-                        this.isFollowing = true; // Takip eden noktaları belirleme
+                        this.isFollowing = true;
                         this.x += (dx / distance) * 5;
                         this.y += (dy / distance) * 5;
                     }
                 } else {
-                    this.isFollowing = false; // Mouse bırakıldığında takip etmeyi durdur
+                    this.isFollowing = false;
                 }
 
                 if (this.scattering) {
-                    // Scatter particles
                     this.directionX = (Math.random() - 0.5) * 3;
                     this.directionY = (Math.random() - 0.5) * 3;
-                    this.scattering = false; // Reset scattering
+                    this.scattering = false;
                 }
 
                 this.x += this.directionX * 0.5;
@@ -327,7 +418,7 @@
         }
 
         function init() {
-            let numberOfParticles = (canvas.width * canvas.height) / 3000;
+            let numberOfParticles = (canvas.width * canvas.height) / 2000;
             for (let i = 0; i < numberOfParticles; i++) {
                 let size = (Math.random() * 3) + 1;
                 let x = (Math.random() * (window.innerWidth - size * 2)) + size;
